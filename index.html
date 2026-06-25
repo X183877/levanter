@@ -1,56 +1,393 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Unknown Yuzuke</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yuzuke Store — MLBB Top Up</title>
+  <meta name="description" content="Yuzuke Store MLBB top up with UPI QR + WhatsApp order." />
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #0f0f0f, #1a1a2e);
-      color: white;
-      text-align: center;
-      padding: 40px 20px;
+    :root{
+      --bg:#06070d;
+      --bg2:#0d1222;
+      --card:#111827;
+      --line:#24304a;
+      --text:#f5f7ff;
+      --muted:#a8b1c7;
+      --green:#39ff88;
+      --purple:#a855f7;
+      --red:#ff4d4d;
+      --gold:#ffd166;
+      --shadow: 0 0 0 1px rgba(255,255,255,.04), 0 18px 60px rgba(0,0,0,.45);
     }
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 10px;
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, Arial, sans-serif;
+      background:
+        radial-gradient(1000px 600px at 20% -10%, rgba(168,85,247,.18), transparent 50%),
+        radial-gradient(900px 500px at 100% 0%, rgba(57,255,136,.10), transparent 45%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      color:var(--text);
     }
-    p {
-      font-size: 1.1rem;
-      color: #ccc;
+    a{text-decoration:none;color:inherit}
+    img{max-width:100%;display:block}
+    .container{width:min(1200px, 92vw);margin:0 auto}
+
+    .topbar{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter: blur(10px);
+      background: rgba(6,7,13,.75);
+      border-bottom:1px solid rgba(255,255,255,.06);
     }
-    .box {
-      max-width: 500px;
-      margin: auto;
-      background: rgba(255,255,255,0.08);
-      padding: 25px;
-      border-radius: 18px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    .topbar-inner{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:14px;padding:12px 0;
     }
-    .btn {
-      display: block;
-      margin: 12px auto;
-      padding: 12px;
-      width: 80%;
-      max-width: 250px;
-      border-radius: 12px;
-      background: #6c63ff;
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .brand-badge{
+      width:42px;height:42px;border-radius:12px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg, rgba(57,255,136,.22), rgba(168,85,247,.24));
+      box-shadow: var(--shadow);
+      font-size:20px;
+    }
+    .brand-title{font-weight:800;font-size:1.05rem}
+    .brand-sub{color:var(--muted);font-size:.84rem;margin-top:4px}
+    .nav{display:flex;gap:10px;flex-wrap:wrap}
+    .nav a{
+      padding:10px 14px;border:1px solid rgba(255,255,255,.08);
+      border-radius:999px;background:rgba(255,255,255,.03);font-weight:600
+    }
+
+    .hero{padding:22px 0 14px}
+    .hero-card{
+      display:grid;grid-template-columns:1.15fr .85fr;gap:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:26px;overflow:hidden;box-shadow:var(--shadow);
+    }
+    .hero-left{padding:26px;display:flex;flex-direction:column;justify-content:center}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
+      width:max-content;background:rgba(57,255,136,.09);color:#dfffea;
+      border:1px solid rgba(57,255,136,.24);font-weight:700;font-size:.86rem;margin-bottom:14px;
+    }
+    .hero h1{
+      margin:0;font-size:clamp(2rem, 5vw, 4rem);
+      line-height:.95;text-transform:uppercase;
+    }
+    .accent{color:var(--green);text-shadow:0 0 24px rgba(57,255,136,.25)}
+    .hero p{margin:14px 0 0;color:var(--muted);font-size:1.02rem;line-height:1.6}
+    .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+    .btn{
+      appearance:none;border:none;cursor:pointer;display:inline-flex;
+      align-items:center;justify-content:center;gap:10px;
+      padding:14px 18px;border-radius:16px;font-weight:800;font-size:1rem;
+      transition:transform .15s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:linear-gradient(135deg, var(--green), #14d46b);color:#05140c}
+    .btn-secondary{background:linear-gradient(135deg, #7c3aed, var(--purple));color:#fff}
+    .btn-danger{background:linear-gradient(135deg, #ff4d4d, #ff7a7a);color:#fff}
+    .btn-dark{background:#121826;color:#fff;border:1px solid rgba(255,255,255,.08)}
+
+    .hero-right{
+      min-height:340px;background:#090d18;border-left:1px solid rgba(255,255,255,.05)
+    }
+    .hero-right img{width:100%;height:100%;object-fit:cover}
+
+    .notice{
+      margin-top:18px;background:linear-gradient(180deg, rgba(168,85,247,.08), rgba(255,255,255,.02));
+      border:1px solid rgba(168,85,247,.18);border-radius:18px;padding:14px 16px;
+      color:#efe8ff;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;box-shadow:var(--shadow);
+    }
+    .notice strong{color:white}
+    .dot{
+      width:8px;height:8px;border-radius:999px;background:var(--green);
+      box-shadow:0 0 14px rgba(57,255,136,.7);display:inline-block;margin-right:8px;
+    }
+
+    section{padding:26px 0}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:16px}
+    .section-title{font-size:1.5rem;margin:0}
+    .section-sub{color:var(--muted);margin:6px 0 0;font-size:.95rem}
+
+    .tools{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-bottom:18px}
+    .search{
+      display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow);
+    }
+    .search input{
+      flex:1;border:none;outline:none;background:transparent;color:white;font-size:1rem
+    }
+    .search input::placeholder{color:#93a0bd}
+    .mini{color:var(--muted);font-size:.92rem}
+
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .pack-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:16px;
+      box-shadow:var(--shadow);position:relative;overflow:hidden;
+    }
+    .pack-name{font-weight:800;font-size:1.02rem}
+    .pack-badge{
+      font-size:.78rem;padding:7px 10px;border-radius:999px;font-weight:800;
+      background:rgba(57,255,136,.10);color:#dfffea;border:1px solid rgba(57,255,136,.22)
+    }
+    .pack-top{display:flex;justify-content:space-between;gap:10px}
+    .pack-desc{color:var(--muted);font-size:.92rem;margin:8px 0 12px;min-height:40px}
+    .price{display:flex;align-items:baseline;gap:8px}
+    .price .rs{font-size:.92rem;color:var(--muted);font-weight:700}
+    .price .num{font-size:1.7rem;font-weight:900;color:white}
+    .pack-actions{display:flex;gap:10px;margin-top:14px}
+    .pack-actions .btn{flex:1;padding:12px 14px;border-radius:14px;font-size:.95rem}
+    .tag-green{background:rgba(57,255,136,.10)}
+    .tag-purple{background:rgba(168,85,247,.12)}
+    .tag-red{background:rgba(255,77,77,.10)}
+    .tag-gold{background:rgba(255,209,102,.10);color:#fff6d6}
+
+    .two-col{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+
+    .feature-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .feature,.order-card,.pay-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.06);border-radius:24px;box-shadow:var(--shadow);
+    }
+    .feature{padding:16px}
+    .feature h4{margin:0 0 8px;font-size:1rem}
+    .feature p{margin:0;color:var(--muted);line-height:1.6;font-size:.95rem}
+
+    .pay-card{overflow:hidden}
+    .pay-head,.order-head{
+      padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.06);
+      background:linear-gradient(180deg, rgba(168,85,247,.08), rgba(255,255,255,.01));
+    }
+    .pay-head h3,.order-head h3{margin:0;font-size:1.3rem}
+    .pay-head p,.order-head p{margin:8px 0 0;color:var(--muted)}
+    .pay-body,.order-body{padding:18px}
+    .qr-wrap{
+      display:grid;place-items:center;padding:14px;border-radius:20px;
+      background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);
+    }
+    .qr-wrap img{
+      width:min(100%, 420px);
+      border-radius:18px;background:#fff;padding:10px;
+    }
+    .upi-box{
+      margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+      padding:14px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)
+    }
+    .upi-id{
+      font-weight:800;word-break:break-all
+    }
+    .copy-msg{
+      color:#b8ffcf;font-size:.92rem;display:none
+    }
+
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .field{display:flex;flex-direction:column;gap:8px}
+    .field label{font-weight:700;font-size:.95rem}
+    .field input,.field select,.field textarea{
+      width:100%;border:none;outline:none;border-radius:16px;padding:14px 14px;
+      background:rgba(255,255,255,.03);color:white;border:1px solid rgba(255,255,255,.08);font-size:1rem;
+    }
+    .field textarea{min-height:120px;resize:vertical}
+    .full{grid-column:1 / -1}
+    .order-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+    .help{margin-top:12px;color:var(--muted);font-size:.94rem;line-height:1.6}
+    .warn{
+      color:#ffd7d7;background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.18);
+      padding:12px 14px;border-radius:14px;margin-top:12px;display:none;
+    }
+
+    footer{padding:34px 0 50px;color:var(--muted);text-align:center}
+    .footer-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.06);border-radius:24px;padding:18px;box-shadow:var(--shadow);
+    }
+    .footer-card strong{color:white}
+
+    @media (max-width:1050px){
+      .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .hero-card{grid-template-columns:1fr}
+      .hero-right{min-height:260px;border-left:none;border-top:1px solid rgba(255,255,255,.05)}
+      .two-col{grid-template-columns:1fr}
+    }
+    @media (max-width:760px){
+      .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .form-grid,.feature-list{grid-template-columns:1fr}
+      .tools{grid-template-columns:1fr}
+      .nav{display:none}
+      .hero-left{padding:20px}
+    }
+    @media (max-width:480px){
+      .grid{grid-template-columns:1fr}
+      .btn{width:100%}
+      .hero-cta{display:grid;grid-template-columns:1fr}
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>Unknown Yuzuke</h1>
-    <p>MLBB Creator • Gamer • Editor</p>
-
-    <a class="btn" href="https://youtube.com/" target="_blank">YouTube</a>
-    <a class="btn" href="https://instagram.com/" target="_blank">Instagram</a>
-    <a class="btn" href="https://facebook.com/" target="_blank">Facebook</a>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="brand-badge">💎</div>
+        <div>
+          <div class="brand-title">Yuzuke Store</div>
+          <div class="brand-sub">MLBB Top Up • QR Payment • WhatsApp Order</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="#packages">Packages</a>
+        <a href="#payment">Payment</a>
+        <a href="#order">Order</a>
+        <a href="https://wa.me/918974688733" target="_blank">WhatsApp</a>
+      </nav>
+    </div>
   </div>
-</body>
-</html>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-card">
+        <div class="hero-left">
+          <div class="pill">⚡ MLBB ONLY • FAST TOP UP</div>
+          <h1><span class="accent">Yuzuke</span> Store</h1>
+          <p>
+            MLBB top-up store with <strong>UPI QR payment</strong>, package selection, and
+            direct WhatsApp ordering. Choose your pack, pay via UPI, then send the order details to WhatsApp.
+          </p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#payment">Pay with UPI</a>
+            <a class="btn btn-secondary" href="#order">Order Now</a>
+          </div>
+        </div>
+        <div class="hero-right">
+          <img src="banner.jpg" alt="Yuzuke Store banner">
+        </div>
+      </div>
+
+      <div class="notice">
+        <div><span class="dot"></span><strong>Weekly Pass:</strong> ₹150</div>
+        <div><strong>UPI ID:</strong> yuzukefthinata7@oksbi</div>
+        <div><strong>WhatsApp:</strong> +91 8974688733</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="packages">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Diamond Packages</h2>
+          <p class="section-sub">Tap any package to auto-fill the order form below.</p>
+        </div>
+      </div>
+
+      <div class="tools">
+        <div class="search">
+          <span>🔎</span>
+          <input id="searchInput" type="text" placeholder="Search packages… e.g. 86, weekly, starlight">
+        </div>
+        <div class="mini">MLBB packs + passes</div>
+      </div>
+
+      <div class="grid" id="packGrid">
+        <!-- SMALL -->
+        <div class="pack-card" data-search="3 diamonds small 9">
+          <div class="pack-top"><div class="pack-name">3 Diamonds</div><div class="pack-badge tag-gold">Small</div></div>
+          <div class="pack-desc">Micro top-up option.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">9</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="3 Diamonds" data-price="9">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="5 diamonds small 12">
+          <div class="pack-top"><div class="pack-name">5 Diamonds</div><div class="pack-badge tag-gold">Small</div></div>
+          <div class="pack-desc">Micro top-up option.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">12</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="5 Diamonds" data-price="12">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="11 diamonds small 23">
+          <div class="pack-top"><div class="pack-name">11 Diamonds</div><div class="pack-badge tag-gold">Small</div></div>
+          <div class="pack-desc">Micro top-up option.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">23</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="11 Diamonds" data-price="23">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="14 diamonds small 32">
+          <div class="pack-top"><div class="pack-name">14 Diamonds</div><div class="pack-badge tag-gold">Small</div></div>
+          <div class="pack-desc">Micro top-up option.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">32</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="14 Diamonds" data-price="32">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="22 diamonds small 46">
+          <div class="pack-top"><div class="pack-name">22 Diamonds</div><div class="pack-badge tag-gold">Small</div></div>
+          <div class="pack-desc">Micro top-up option.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">46</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="22 Diamonds" data-price="46">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="55 diamonds small 85">
+          <div class="pack-top"><div class="pack-name">55 Diamonds</div><div class="pack-badge tag-gold">Small</div></div>
+          <div class="pack-desc">Micro top-up option.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">85</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="55 Diamonds" data-price="85">Select</button></div>
+        </div>
+
+        <!-- REGULAR -->
+        <div class="pack-card" data-search="86 diamonds regular 130">
+          <div class="pack-top"><div class="pack-name">86 Diamonds</div><div class="pack-badge tag-green">Regular</div></div>
+          <div class="pack-desc">Quick top-up pack.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">130</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="86 Diamonds" data-price="130">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="110 diamonds regular 170">
+          <div class="pack-top"><div class="pack-name">110 Diamonds</div><div class="pack-badge tag-green">Regular</div></div>
+          <div class="pack-desc">Regular MLBB pack.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">170</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="110 Diamonds" data-price="170">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="112 diamonds regular 172">
+          <div class="pack-top"><div class="pack-name">112 Diamonds</div><div class="pack-badge tag-green">Regular</div></div>
+          <div class="pack-desc">Regular MLBB pack.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">172</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="112 Diamonds" data-price="172">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="141 diamonds regular 220">
+          <div class="pack-top"><div class="pack-name">141 Diamonds</div><div class="pack-badge tag-green">Regular</div></div>
+          <div class="pack-desc">Regular MLBB pack.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">220</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="141 Diamonds" data-price="220">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="165 diamonds regular 245">
+          <div class="pack-top"><div class="pack-name">165 Diamonds</div><div class="pack-badge tag-green">Regular</div></div>
+          <div class="pack-desc">Regular MLBB pack.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">245</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="165 Diamonds" data-price="245">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="172 diamonds regular 255">
+          <div class="pack-top"><div class="pack-name">172 Diamonds</div><div class="pack-badge tag-green">Regular</div></div>
+          <div class="pack-desc">Regular MLBB pack.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">255</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="172 Diamonds" data-price="255">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="220 diamonds regular 330">
+          <div class="pack-top"><div class="pack-name">220 Diamonds</div><div class="pack-badge tag-green">Regular</div></div>
+          <div class="pack-desc">Regular MLBB pack.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">330</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="220 Diamonds" data-price="330">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="257 diamonds regular 365">
+          <div class="pack-top"><div class="pack-name">257 Diamonds</div><div class="pack-badge tag-green">Regular</div></div>
+          <div class="pack-desc">Popular mid pack.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">365</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="257 Diamonds" data-price="365">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="275 diamonds regular 385 hot">
+          <div class="pack-top"><div class="pack-name">275 Diamonds 🔥</div><div class="pack-badge tag-red">Hot</div></div>
+          <div class="pack-desc">Hot pick from your pack list.</div>
+          <div class="price"><span class="rs">₹</span><span class="num">385</span></div>
+          <div class="pack-actions"><button class="btn btn-primary select-pack" data-pack="275 Diamonds" data-price="385">Select</button></div>
+        </div>
+        <div class="pack-card" data-search="312 diamonds regular 450">
+          <div class="pack-top"><div class="pack-name">312 Diamonds</div><div class="pack-badge tag-green">Regular</div></div>
+          <div class="pack-desc">Regular MLBB pack.</div>
+          <div class="price"><span class="rs"
